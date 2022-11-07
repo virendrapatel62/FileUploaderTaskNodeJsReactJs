@@ -1,5 +1,8 @@
 const express = require("express");
 const multer = require("multer");
+const { getPayloadFromToken } = require("../utils/jwt");
+const { File } = require("../models/file");
+const e = require("express");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -29,12 +32,35 @@ fileRouter.post(
   "/upload",
   fileUploadMiddleware.any(),
   async (request, response) => {
-    console.log(request.headers);
+    const token = request.headers.authorization;
+    const payload = getPayloadFromToken(token);
+    if (!payload) {
+      return response.status(401).json({
+        message: "please login",
+      });
+    }
 
-    response.json({
-      message: "Uploading File...",
-      files: "File....",
-    });
+    const userId = payload._id;
+    const files = request.files.map(
+      ({ originalname, mimetype, filename, path, size }) => {
+        return {
+          user: userId,
+          originalname,
+          mimetype,
+          filename,
+          path,
+          size,
+        };
+      }
+    );
+
+    File.create(files)
+      .then((result) => {
+        response.json({ files: result });
+      })
+      .catch((error) => {
+        response.status(500).json(error);
+      });
   }
 );
 

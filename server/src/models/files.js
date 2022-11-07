@@ -33,12 +33,6 @@ const fileSchema = new mongoose.Schema(
   }
 );
 
-fileSchema.virtual("url").get(function () {
-  return `http://localhost:3001/api/file/download/${createTemporaryFileURL({
-    _id: this._id,
-  })}`;
-});
-
 const File = mongoose.model("File", fileSchema);
 
 module.exports = {

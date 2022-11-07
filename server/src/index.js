@@ -20,16 +20,14 @@ app.use("/api/login", loginRouter);
 app.use("/api/users", userRouter);
 app.use("/api/files", authMiddleware, fileRouter);
 
-app.use("/api/file/download/:token", async (request, response, next) => {
-  let file = getFileFromToken(request.params.token);
-  if (!file) {
-    return response.status(404).json({
-      error: "File now found!",
-    });
+app.use(
+  "/api/file/download/:fileid",
+  authMiddleware,
+  async (request, response, next) => {
+    file = await File.findById(request.params.fileid);
+    response.download(path.join(process.env.PWD, file.path));
   }
-  file = await File.findById(file._id);
-  response.download(path.join(process.env.PWD, file.path));
-});
+);
 
 app.listen(3001, () => {
   console.log("Server is Listening on port 3001");

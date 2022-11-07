@@ -15,3 +15,14 @@ export const uploadFiles = (files = []) => {
     },
   });
 };
+
+export const getFileDownloadUrl = (id) => {
+  return api
+    .get(`/file/download/${id}`, {
+      responseType: "blob",
+    })
+    .then((response) => response.data)
+    .then((blob) => {
+      return window.URL.createObjectURL(new Blob([blob]));
+    });
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useState } from "react";
 import { FilesList } from "../components/FilesList";
 import { FileUpload } from "../components/FileUpload";
@@ -6,7 +6,7 @@ import { FileUpload } from "../components/FileUpload";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthProvider";
 import { api } from "../services";
-import { uploadFiles } from "../services/files";
+import { getFileDownloadUrl, uploadFiles } from "../services/files";
 
 const Row = ({ children }) => <div className="row">{children}</div>;
 
@@ -21,6 +21,8 @@ const Column = ({ children, ...params }) => {
 export default function FilePage() {
   const [files, setFiles] = useState([]);
   const { user } = useAuth();
+  const downloadLinkRef = useRef();
+  const [filename, setFileName] = useState();
   const [page, setPage] = useState(1);
 
   const getFiles = () => {
@@ -40,7 +42,15 @@ export default function FilePage() {
   };
 
   const downloadFile = (file) => {
-    window.open(file.url, "_blank");
+    getFileDownloadUrl(file.id)
+      .then((blobUrl) => {
+        downloadLinkRef.current.href = blobUrl;
+        downloadLinkRef.current.download = file.filename;
+        downloadLinkRef.current.click();
+      })
+      .catch((error) => {
+        alert("Can not download the file.");
+      });
   };
 
   const onPageChange = (changeBy) => {
@@ -49,6 +59,8 @@ export default function FilePage() {
 
   return (
     <Row>
+      <a download={filename} ref={downloadLinkRef}></a>
+
       <Column col>
         <FilesList files={files} downloadFile={downloadFile}></FilesList>
         <hr />

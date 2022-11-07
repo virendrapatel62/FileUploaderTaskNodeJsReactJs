@@ -2,7 +2,8 @@ import React from "react";
 import FileUploader from "../components/filesUI/FileUploader";
 import FileList from "../components/filesUI/FileList";
 import { useState } from "react";
-import { uploadFiles } from "../services/file-service";
+import { getFiles, uploadFiles } from "../services/file-service";
+import { useEffect } from "react";
 
 const Row = ({ children }) => <div className="row">{children}</div>;
 const Column = ({ children, ...props }) => {
@@ -12,25 +13,36 @@ const Column = ({ children, ...props }) => {
 };
 
 export default function FilesPage() {
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    getFiles().then((response) => {
+      setFiles(response.files);
+    });
+  }, []);
+
   const onFilesSelect = (files) => {
-    setFiles(files);
+    setSelectedFiles(files);
   };
 
   const onUpload = () => {
-    uploadFiles(files)
-      .then((response) => console.log(response))
+    uploadFiles(selectedFiles)
+      .then(({ files: newFiles }) => {
+        setFiles([...files, ...newFiles]);
+        setSelectedFiles([]);
+      })
       .catch((error) => console.error(error));
   };
 
   return (
     <Row>
       <Column col-7>
-        <FileList></FileList>
+        <FileList files={files}></FileList>
       </Column>
       <Column col>
         <FileUploader
-          files={files}
+          selectedFiles={selectedFiles}
           onFilesSelect={onFilesSelect}
           onUpload={onUpload}
         ></FileUploader>

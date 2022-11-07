@@ -13,3 +13,7 @@ export const uploadFiles = (files = []) => {
     })
     .then((response) => response.data);
 };
+
+export const getFiles = () => {
+  return api.get("/api/files").then((response) => response.data);
+};

@@ -5,7 +5,10 @@ export const saveUserTokenToLocalStorage = (token) => {
 };
 
 export const getUserTokenFormLocalStorage = () => {
-  const token = localStorage.getItem(TOKEN_KEY) || "";
-
-  return JSON.parse(token);
+  const token = localStorage.getItem(TOKEN_KEY);
+  try {
+    return JSON.parse(token);
+  } catch (error) {
+    return "";
+  }
 };

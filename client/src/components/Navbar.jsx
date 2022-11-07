@@ -8,6 +8,7 @@ export default function Navbar() {
   const { login, logout, user } = useAuth();
   const handleLogin = () => {
     login((response) => {
+      console.log({ response });
       const { email, displayName, uid, photoURL } = response.user;
       const payload = {
         email,
@@ -16,6 +17,7 @@ export default function Navbar() {
         photoURL,
       };
       loginSuccess(payload).then((response) => {
+        console.log({ response });
         saveUserTokenToLocalStorage(response.accessToken);
       });
     });

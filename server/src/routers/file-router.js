@@ -21,9 +21,10 @@ const fileRouter = express.Router();
 
 // /api/files :
 // TODO : return all the files
-fileRouter.get("/", (request, response) => {
+fileRouter.get("/", async (request, response) => {
+  const files = await File.find();
   response.json({
-    message: "Files Router is Working...",
+    files,
   });
 });
 
@@ -32,15 +33,7 @@ fileRouter.post(
   "/upload",
   fileUploadMiddleware.any(),
   async (request, response) => {
-    const token = request.headers.authorization;
-    const payload = getPayloadFromToken(token);
-    if (!payload) {
-      return response.status(401).json({
-        message: "please login",
-      });
-    }
-
-    const userId = payload._id;
+    const userId = request.user._id;
     const files = request.files.map(
       ({ originalname, mimetype, filename, path, size }) => {
         return {

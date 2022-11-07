@@ -3,6 +3,7 @@ const cors = require("cors");
 const { createConnection } = require("./db");
 const { authRouter } = require("./routers/auth-router");
 const { fileRouter } = require("./routers/file-router");
+const { authMiddleware } = require("./middlewares/auth-middleware");
 
 createConnection(() => console.log("Connected Mongo DB..."));
 const PORT = 3001;
@@ -18,7 +19,7 @@ app.get("/ping", (request, response) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/files", fileRouter);
+app.use("/api/files", authMiddleware, fileRouter);
 app.listen(PORT, () => {
   console.log(`Server is Listening on port ${PORT}`);
 });

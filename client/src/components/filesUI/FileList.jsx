@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function FileList({ files }) {
+export default function FileList({ files, onDownload }) {
   return (
     <div>
       <h1>All Uploaded Files</h1>
@@ -20,7 +20,12 @@ export default function FileList({ files }) {
                   <td>{index + 1}</td>
                   <td>{file.originalname}</td>
                   <td>
-                    <button className="btn btn-success btn-sm">Download</button>
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => onDownload(file)}
+                    >
+                      Download
+                    </button>
                   </td>
                 </tr>
               );

@@ -20,6 +20,7 @@ app.get("/ping", (request, response) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/files", authMiddleware, fileRouter);
+// app.use("/api/files", fileRouter);
 app.listen(PORT, () => {
   console.log(`Server is Listening on port ${PORT}`);
 });
